@@ -107,7 +107,9 @@ function App() {
   async function checkOllama() {
     setOllama("checking");
     try {
-      const res = await fetch("http://localhost:11434/api/tags", { signal: AbortSignal.timeout(3000) });
+      // Use 127.0.0.1, not "localhost": on Windows localhost resolves to IPv6 ::1
+      // first, but Ollama binds to IPv4 127.0.0.1, so "localhost" fails there.
+      const res = await fetch("http://127.0.0.1:11434/api/tags", { signal: AbortSignal.timeout(3000) });
       if (!res.ok) throw new Error();
       setOllama("running");
     } catch {

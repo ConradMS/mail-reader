@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-const OLLAMA_BASE: &str = "http://localhost:11434";
+// Use 127.0.0.1, not "localhost": on Windows localhost resolves to IPv6 ::1
+// first, but Ollama binds to IPv4 127.0.0.1, so "localhost" fails to connect.
+const OLLAMA_BASE: &str = "http://127.0.0.1:11434";
 
 /// Client with a short connect timeout but NO body-read timeout.
 /// Reqwest's `.timeout()` on a RequestBuilder kills the *entire* response body
