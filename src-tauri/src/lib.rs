@@ -837,6 +837,14 @@ async fn get_ollama_models() -> Result<Vec<String>, String> {
     ollama::get_available_models().await
 }
 
+/// Returns true if Ollama is reachable. Done in the backend (reqwest) rather
+/// than a frontend fetch because WebView2 on Windows blocks plain-HTTP requests
+/// to localhost from the app's web context.
+#[tauri::command]
+async fn check_ollama() -> bool {
+    ollama::ping().await.is_ok()
+}
+
 /// Loads the model into Ollama's memory without generating any output.
 /// Call this on startup and whenever the selected model changes so that
 /// subsequent inference requests don't pay the cold-start penalty.
@@ -1187,6 +1195,7 @@ pub fn run() {
             get_email_analysis_error,
             analyze_email_now,
             get_ollama_models,
+            check_ollama,
             warmup_model,
             is_analyzing,
             test_analyze_email,

@@ -107,11 +107,11 @@ function App() {
   async function checkOllama() {
     setOllama("checking");
     try {
-      // Use 127.0.0.1, not "localhost": on Windows localhost resolves to IPv6 ::1
-      // first, but Ollama binds to IPv4 127.0.0.1, so "localhost" fails there.
-      const res = await fetch("http://127.0.0.1:11434/api/tags", { signal: AbortSignal.timeout(3000) });
-      if (!res.ok) throw new Error();
-      setOllama("running");
+      // Check via the Rust backend (reqwest), NOT a frontend fetch: WebView2 on
+      // Windows blocks plain-HTTP requests to localhost from the app's web
+      // context, so a browser fetch always failed there even when Ollama was up.
+      const running = await invoke<boolean>("check_ollama");
+      setOllama(running ? "running" : "not_running");
     } catch {
       setOllama("not_running");
     }
